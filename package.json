@@ -4,7 +4,7 @@
   "description": "This project will allow you to showcase your backend development skills learned throughout the course. It integrates essential concepts like databases, i18n, queuing systems, and unit testing in a practical application.",
   "main": "server.js",
   "keywords": [],
-  "author": "Sabir and Islam",
+  "author": "Adoris and Drich",
   "license": "ISC",
   "scripts": {
     "lint": "./node_modules/.bin/eslint",
