@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>API Interaction</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        input, button {
+            margin: 10px 0;
+            padding: 5px;
+            width: 100%;
+        }
+        #result {
+            background-color: #f4f4f4;
+            padding: 10px;
+            margin-top: 20px;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+    <h1>API Interaction</h1>
+    
+    <h2>Login (Get Token)</h2>
+    <input type="email" id="email" placeholder="Email">
+    <input type="password" id="password" placeholder="Password">
+    <button onclick="getToken()">Get Token</button>
+
+    <h2>User Operations</h2>
+    <input type="text" id="token" placeholder="Enter Token">
+    <button onclick="getUserProfile()">Get My Profile</button>
+    <button onclick="disconnect()">Disconnect</button>
+
+    <h2>Result</h2>
+    <div id="result"></div>
+
+    <script>
+        async function getToken() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            try {
+                const credentials = btoa(`${email}:${password}`);
+                const response = await fetch('/connect', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Basic ${credentials}`
+                    }
+                });
+
+                const data = await response.json();
+                document.getElementById('result').innerHTML = `Token: ${data.token}`;
+                document.getElementById('token').value = data.token;
+            } catch (error) {
+                document.getElementById('result').innerHTML = `Error: ${error.message}`;
+            }
+        }
+
+        async function getUserProfile() {
+            const token = document.getElementById('token').value;
+            
+            try {
+                const response = await fetch('/users/me', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                const data = await response.json();
+                document.getElementById('result').innerHTML = `User Profile: ${JSON.stringify(data, null, 2)}`;
+            } catch (error) {
+                document.getElementById('result').innerHTML = `Error: ${error.message}`;
+            }
+        }
+
+        async function disconnect() {
+            const token = document.getElementById('token').value;
+            
+            try {
+                const response = await fetch('/disconnect', {
+                    method: 'GET',
+                    headers: {
+                        'X-Token': token
+                    }
+                });
+
+                document.getElementById('result').innerHTML = 'Disconnected Successfully';
+                document.getElementById('token').value = '';
+            } catch (error) {
+                document.getElementById('result').innerHTML = `Error: ${error.message}`;
+            }
+        }
+    </script>
+</body>
+</html>

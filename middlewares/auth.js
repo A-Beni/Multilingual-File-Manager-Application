@@ -1,52 +1,45 @@
-/* eslint-disable no-unused-vars */
-
-// Middlewares for authentication
-
-import { Request, Response, NextFunction } from 'express';
 import { getUserFromXToken, getUserFromAuthorization } from '../utils/auth';
-
+import mongoDBCore from 'mongodb/lib/core';
+import dbClient from '../utils/db';
+import redisClient from '../utils/redis';
 
 // Basic authentication middleware: applies basic authentication to a route
-export const basicAuthenticate = async(req, res, next) => {
-  const user = await getUserFromAuthorization(req);
+export const basicAuthenticate = async (req, res, next) => {
+  try {
+    console.log('Basic Authentication: Checking credentials...');
+    const user = await getUserFromAuthorization(req);
 
-  if (!user) return res.status(401).json({ error: 'Unauthorized' });
+    if (!user) {
+      console.error('Basic Authentication Failed: User not found or invalid credentials.');
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
 
-  req.user = user;
-  next();
+    console.log('Basic Authentication Successful:', user.email);
+    req.user = user;
+    next();
+  } catch (error) {
+    console.error('Basic Authentication Error:', error.message);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
 };
 
 // X-Token authentication middleware: applies x-token authentication to a route
-export const xTokenAuthenticate = async(req, res, next) => {
-  const user = await getUserFromXToken(req);
-
-  if (!user) return res.status(401).json({ error: 'Unauthorized' });
-
-  req.user = user;
-  next();
-};
-
-
-/* Language middleware: sets the language of the request
-const fs = require('fs');
-const path = require('path');
-
-export const loadTranslations = (req, res, next) => {
-  const language = req.headers['accept-language'] || 'en';
-  req.language = language.split(',')[0];
-
-  // Load the appropriate translation file
-  const localesDir = path.join(__dirname, '../locales');
-  const langFile = `${req.language}.json`;
-
+export const xTokenAuthenticate = async (req, res, next) => {
   try {
-    const translations = fs.readFileSync(path.join(localesDir, langFile), 'utf-8');
-    req.translations = JSON.parse(translations);
-  } catch (err) {
-    // Fallback to English if the file is not found
-    const translations = fs.readFileSync(path.join(localesDir, 'en.json'), 'utf-8');
-    req.translations = JSON.parse(translations);
-  }
+    console.log('X-Token Authentication: Checking token...');
 
-  next();
-};*/
+    const user = await getUserFromXToken(req);
+
+    if (!user) {
+      console.error('X-Token Authentication Failed: User not found or token invalid.');
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    console.log('X-Token Authentication Successful:', user.email);
+    req.user = user;
+    next();
+  } catch (error) {
+    console.error('X-Token Authentication Error:', error.message);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+};

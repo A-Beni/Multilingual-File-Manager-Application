@@ -65,11 +65,11 @@ userQueue.process(async (job, done) => {
     const mailContent = [
       '<div>',
       '<h3>Hello {{user.name}},</h3>',
-      'Welcome to <a href="https://github.com/SabirWalid/Multilingual-File-Manager-Application">',
+      'Welcome to <a href="https://github.com/ChernetAsmamaw/Multilingual-File-Manager-Application">',
       'Multilingual File Manager</a>, ',
       'a simple file management API built with Node.js by ',
-      '<a href="https://github.com/SabirWalid">Sabir</a> and ',
-      '<a href="https://github.com/Islam-19984">Islam</a>.',
+      '<a href="https://github.com/ChernetAsmamaw">Chernet</a> and ',
+      '<a href="https://github.com/BevilMulore">Bevil</a>.',
       'We hope it meets your needs.',
       '</div>',
     ].join('');
